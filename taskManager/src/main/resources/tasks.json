@@ -1,0 +1,26 @@
+[ {
+  "name" : "Do UML",
+  "description" : "Umling",
+  "legend" : {
+    "color" : "RED",
+    "subject" : "Science"
+  },
+  "dueDate" : {
+    "startDate" : "0001-01-01",
+    "endDate" : "0001-02-03"
+  },
+  "isCompleted" : false,
+  "priority" : 2
+}, {
+  "name" : "Do this",
+  "description" : "Umling",
+  "legend" : {
+    "color" : "RED",
+    "subject" : "Science"
+  },
+  "dueDate" : {
+    "startDate" : "0001-02-03"
+  },
+  "isCompleted" : false,
+  "priority" : 0
+} ]
