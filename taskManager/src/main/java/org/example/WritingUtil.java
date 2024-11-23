@@ -11,7 +11,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 
 public class WritingUtil {
-    public static final String TASKS_PATH = "..\\taskManager\\src\\main\\resources\\tasks.json";
+    public static final String TASKS_PATH = "src/main/resources/tasks.json";
 
     public static ArrayList<Task> loadTasksFromJSON() {
         ArrayList<Task> tasks = new ArrayList<>();

@@ -6,8 +6,8 @@ import java.util.Arrays;
 
 public class Main {
     public static void main(String[] args) {
-        PriorityTask task = new PriorityTask("Do UML","Umling",LocalDate.of(1,1,1),LocalDate.of(1,2,3),2,false,"Red","Science");
-        Task task2 = new Task("Do this","Umling",LocalDate.of(1,2,3),false,"Red","Science");
+        Task t1 =new Task("Science Project", "Prepare presentation", LocalDate.of(2024, 1, 7), LocalDate.of(2024, 1, 2), false, "Green", "Math");
+        Task t =new Task("Math Homework", "Complete exercises", LocalDate.of(2024, 1, 10), LocalDate.of(2024, 1, 5), false, "Blue", "Math");
 
         WritingUtil.writeTasksToJSON();
 

@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 public class TaskManagerExc implements TaskManager {
     private static ArrayList<Task> taskList = new ArrayList<>();
+    private static ArrayList<String> subjectFilters = new ArrayList<>(List.of(new String[]{"Math", "Physics"}));
 
     public TaskManagerExc() {
         taskList = WritingUtil.loadTasksFromJSON();
@@ -18,6 +19,10 @@ public class TaskManagerExc implements TaskManager {
 
     public static ArrayList<Task> getTaskList() {
         return taskList;
+    }
+
+    public static ArrayList<String> getSubjectFilters() {
+        return subjectFilters;
     }
 
     @Override

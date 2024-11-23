@@ -3,6 +3,7 @@ package org.example.GUI;
 import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.fonts.roboto.FlatRobotoFont;
 import com.formdev.flatlaf.themes.FlatMacDarkLaf;
+import org.example.TaskManagerExc;
 
 
 import javax.swing.*;
@@ -16,12 +17,15 @@ public class Application extends JFrame {
     }
 
     private void init() {
-        setTitle("Course Recommender");
+
+        new TaskManagerExc();
+
+        setTitle("School Task Manager");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(new Dimension(1500, 900));
         setResizable(false);
         setLocationRelativeTo(null);
-        setContentPane(new MainForm(this));
+        setContentPane(new Dashboard(this));
         FormsManager.getInstance().initApplication(this);
 
     }
