@@ -13,7 +13,6 @@ import javax.swing.*;
 import java.awt.*;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 public class CreateStickyNoteForm extends JPanel {
 
@@ -21,6 +20,7 @@ public class CreateStickyNoteForm extends JPanel {
     private JTextArea descriptionArea;
     private JCheckBox isCompletedCheckBox;
     private JComboBox<String> subjectPackageComboBox;
+    private JComboBox<String> priorityComboBox;
     private JButton saveBtn;
 
     private JFormattedTextField editor;
@@ -43,9 +43,9 @@ public class CreateStickyNoteForm extends JPanel {
         descriptionArea = new JTextArea(5, 20);
         isCompletedCheckBox = new JCheckBox("Is Completed");
         subjectPackageComboBox = new JComboBox<>(TaskManagerExc.getSubjectFilters().toArray(new String[0]));
+        priorityComboBox = new JComboBox<>(new String[]{"Normal","Urgent","Normal"});
+
         saveBtn = new JButton("Save");
-
-
 
         // Style for text area and text field
         descriptionArea.setLineWrap(true);
@@ -59,7 +59,6 @@ public class CreateStickyNoteForm extends JPanel {
         nameField.setPreferredSize(new Dimension(nameField.getPreferredSize().width, 40));
         nameField.setBorder(BorderFactory.createEmptyBorder());
         descriptionArea.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Enter Course Description");
-
 
 
         DatePicker datePicker = new DatePicker();
@@ -92,16 +91,16 @@ public class CreateStickyNoteForm extends JPanel {
 
         panel.add(new JLabel("Description"), "gapy 10");
         panel.add(new JScrollPane(descriptionArea), "height 100px");
-//        panel.add(startDateBtn, "gapy 10");
-//
-//        panel.add(endDateBtn, "gapy 10");
+
+
         panel.add(editor,"gapy 10");
         panel.add(new JSeparator(), "gapy 10 10");
 
         panel.add(isCompletedCheckBox);
         panel.add(new JLabel("Subject Package"), "gapy 10");
         panel.add(subjectPackageComboBox);
-
+        panel.add(new JSeparator(), "gapy 10 10");
+        panel.add(priorityComboBox);
         panel.add(saveBtn, "gapy 20");
 
         add(panel);

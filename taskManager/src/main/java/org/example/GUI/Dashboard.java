@@ -169,12 +169,13 @@ public class Dashboard extends JPanel implements Clickable {
 
         stickyNotePanel.add(legendPanel);
 
+        doubleClick(stickyNotePanel,task);
+
         return stickyNotePanel;
     }
 
     @Override
     public void makeDraggable(JPanel stickyNote) {
-        doubleClick(stickyNote);
 
         stickyNote.addMouseListener(new MouseAdapter() {
             @Override
@@ -235,12 +236,12 @@ public class Dashboard extends JPanel implements Clickable {
     }
 
     @Override
-    public void doubleClick(JPanel stickyNote) {
+    public void doubleClick(JPanel stickyNote, Task task) {
         stickyNote.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2) {
-                    FormsManager.getInstance().showForm(new StickyNoteForm(frame));
+                    FormsManager.getInstance().showForm(new StickyNoteForm(frame, task));
                 }
             }
         });
