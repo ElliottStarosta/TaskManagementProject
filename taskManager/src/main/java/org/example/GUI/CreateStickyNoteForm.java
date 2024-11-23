@@ -84,7 +84,7 @@ public class CreateStickyNoteForm extends JPanel {
 
         // Create panel with MigLayout
         JPanel panel = new JPanel(new MigLayout("wrap, fillx, insets 35 45 30 45", "[fill, 360]"));
-        panel.putClientProperty(FlatClientProperties.STYLE, "background: darken(@background,3%)"); // Sets a blue background
+        panel.putClientProperty(FlatClientProperties.STYLE, "background: darken(@background,3%); arc:10"); // Sets a blue background
 
         // Adding components to the panel
         panel.add(nameField);

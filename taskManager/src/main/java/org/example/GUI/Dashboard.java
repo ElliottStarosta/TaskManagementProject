@@ -111,14 +111,14 @@ public class Dashboard extends JPanel implements Clickable {
         JLabel nameLabel = new JLabel(task.getName());
         nameLabel.setBounds(13, 0, 200, 50);
         nameLabel.putClientProperty(FlatClientProperties.STYLE,
-                "font:bold +7;" + "[dark]foreground:darken(@background,5%)");
+                "font:bold +7;" + "[dark]foreground:@white");
         stickyNotePanel.add(nameLabel);
 
         // Description Label (Below Name)
         JLabel descriptionLabel = new JLabel(task.getDescription());
         descriptionLabel.setBounds(13, 40, 280, 40); // Allow room for multi-line text
         descriptionLabel.putClientProperty(FlatClientProperties.STYLE,
-                "font: $small.font;" + "[dark]foreground:lighten(@background,25%)");
+                "font: $small.font;" + "[dark]foreground:lighten(@white,25%)");
         stickyNotePanel.add(descriptionLabel);
 
         // Due Date Label (Top Right)
@@ -126,7 +126,7 @@ public class Dashboard extends JPanel implements Clickable {
         dueDateLabel.setFont(dueDateFont);
 
         dueDateLabel.putClientProperty(FlatClientProperties.STYLE,
-                "font: $medium.font;" + "[dark]foreground:darken(@background,5%)");
+                "font: $medium.font;" + "[dark]foreground:darken(@white,5%)");
 
         dueDateLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         dueDateLabel.setBounds(180, 0, dueDateWidth, 50); // Adjust width based on due date length
@@ -151,7 +151,7 @@ public class Dashboard extends JPanel implements Clickable {
         // Legend Text
         JLabel legendText = new JLabel(task.getLegend()[1]);
         legendText.putClientProperty(FlatClientProperties.STYLE,
-                "font: bold;" + "[dark]foreground:darken(@background,15%)");
+                "font: bold;" + "[dark]foreground:darken(@white,15%)");
         legendText.setAlignmentY(JLabel.CENTER_ALIGNMENT); // Center-align within the BoxLayout
         legendPanel.add(legendText);
 

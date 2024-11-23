@@ -44,7 +44,5 @@ public class StickyNoteForm extends JPanel {
 
         return stickyNotePanel;
     }
-
-
 }
 
