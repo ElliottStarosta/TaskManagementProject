@@ -1,9 +1,10 @@
-package org.example.GUI;
+package org.example.GUI.Components.StickyNote;
 
 import com.formdev.flatlaf.FlatClientProperties;
 import net.miginfocom.swing.MigLayout;
+import org.example.GUI.Dashboard;
+import org.example.GUI.FormsManager;
 import org.example.PriorityTask;
-import org.example.Task;
 import org.example.TaskManagerExc;
 import org.example.WritingUtil;
 
@@ -83,6 +84,7 @@ public class StickyNoteForm extends JPanel {
 
         subjectComboBox = new JComboBox<>(TaskManagerExc.getSubjectFilters().toArray(new String[0]));
         subjectComboBox.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        subjectComboBox.setSelectedItem(task.getLegend()[1]);
 
         // Priority Section
         JLabel priorityLabel = new JLabel("Priority");
@@ -179,7 +181,7 @@ public class StickyNoteForm extends JPanel {
 
         task.setName(title);
         task.setDescription(description);
-        task.setLegend("Blue", subject);
+        task.setLegend(TaskManagerExc.getLegend().get(subject), subject);
         task.setDueDate(dateRange[0], dateRange[1]);
         task.setPriority(priorityValue);
 

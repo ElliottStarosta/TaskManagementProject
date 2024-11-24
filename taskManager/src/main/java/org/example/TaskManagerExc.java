@@ -1,12 +1,28 @@
 package org.example;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class TaskManagerExc implements TaskManager {
     private static ArrayList<PriorityTask> taskList = new ArrayList<>();
-    private static ArrayList<String> subjectFilters = new ArrayList<>(List.of(new String[]{"Math", "Physics"}));
+    private static LinkedHashMap<String, String> legend = new LinkedHashMap<>() {{
+        put("All", null);
+        put("Math", "RED");
+        put("Science","GREEN");
+        put("History", "ORANGE");
+        put("English", "BLUE");
+        put("Computer Science", "PINK");
+        put("Art", "LIME");
+        put("Music", "CYAN");
+        put("Economics", "GOLD");
+    }};
+
+    private static String[] classes = legend.keySet().toArray(new String[0]);
+    private static ArrayList<String> subjectFilters = new ArrayList<>(List.of(classes));
+
 
     public TaskManagerExc() {
         taskList = WritingUtil.loadTasksFromJSON();
@@ -46,5 +62,13 @@ public class TaskManagerExc implements TaskManager {
             System.out.println(task.getTaskSummary());
             System.out.println("--------------------");
         }
+    }
+
+    public static String[] getClasses() {
+        return classes;
+    }
+
+    public static HashMap<String,String> getLegend() {
+        return legend;
     }
 }

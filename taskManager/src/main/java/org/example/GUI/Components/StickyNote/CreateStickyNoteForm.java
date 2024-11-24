@@ -1,9 +1,10 @@
-package org.example.GUI;
+package org.example.GUI.Components.StickyNote;
 
 import com.formdev.flatlaf.FlatClientProperties;
 import net.miginfocom.swing.MigLayout;
+import org.example.GUI.Dashboard;
+import org.example.GUI.FormsManager;
 import org.example.PriorityTask;
-import org.example.Task;
 import org.example.TaskManagerExc;
 import org.example.WritingUtil;
 import raven.datetime.component.date.DateEvent;
@@ -107,7 +108,7 @@ public class CreateStickyNoteForm extends JPanel {
 
         // Create panel with MigLayout
         JPanel panel = new JPanel(new MigLayout("wrap, fillx, insets 35 45 30 45", "[fill, 360]"));
-        panel.putClientProperty(FlatClientProperties.STYLE, "background: darken(@background,3%); arc:10"); // Sets a blue background
+        panel.putClientProperty(FlatClientProperties.STYLE, "background: darken(@background,3%); arc:10");
 
         // Adding components to the panel
         panel.add(nameField);
@@ -155,9 +156,9 @@ public class CreateStickyNoteForm extends JPanel {
         }
 
         if (dateRange.length == 2) {
-            new PriorityTask(name,description,dateRange[0],dateRange[1],priorityValue,false,"blue",subjectPackage);
+            new PriorityTask(name,description,dateRange[0],dateRange[1],priorityValue,false,TaskManagerExc.getLegend().get(subjectPackage),subjectPackage);
         } else {
-            new PriorityTask(name,description,dateRange[0],dateRange[1],priorityValue,false,"blue",subjectPackage);
+            new PriorityTask(name,description,dateRange[0],dateRange[1],priorityValue,false,TaskManagerExc.getLegend().get(subjectPackage),subjectPackage);
         }
 
         WritingUtil.writeTasksToJSON();

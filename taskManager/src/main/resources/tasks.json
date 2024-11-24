@@ -15,12 +15,64 @@
   "name" : "lkj",
   "description" : "swdfrgtyhuuuuuuuuuuu",
   "legend" : {
-    "color" : "BLUE",
-    "subject" : "Physics"
+    "color" : "ORANGE",
+    "subject" : "History"
   },
   "dueDate" : {
     "startDate" : "2024-11-25",
     "endDate" : "2024-11-28"
+  },
+  "isCompleted" : false,
+  "priority" : 1
+}, {
+  "name" : "adad",
+  "description" : "adad",
+  "legend" : {
+    "color" : "RED",
+    "subject" : "Math"
+  },
+  "dueDate" : {
+    "startDate" : "2024-11-24",
+    "endDate" : "2024-11-27"
+  },
+  "isCompleted" : false,
+  "priority" : 0
+}, {
+  "name" : "ada",
+  "description" : "addaad",
+  "legend" : {
+    "color" : "PINK",
+    "subject" : "Computer Science"
+  },
+  "dueDate" : {
+    "startDate" : "2024-11-24",
+    "endDate" : "2024-11-26"
+  },
+  "isCompleted" : false,
+  "priority" : 0
+}, {
+  "name" : "adad",
+  "description" : "adadad",
+  "legend" : {
+    "color" : "LIME",
+    "subject" : "Art"
+  },
+  "dueDate" : {
+    "startDate" : "2024-11-25",
+    "endDate" : "2024-11-25"
+  },
+  "isCompleted" : false,
+  "priority" : 3
+}, {
+  "name" : "adada",
+  "description" : "adadad",
+  "legend" : {
+    "color" : "GREEN",
+    "subject" : "Science"
+  },
+  "dueDate" : {
+    "startDate" : "2024-11-25",
+    "endDate" : "2024-11-25"
   },
   "isCompleted" : false,
   "priority" : 1

@@ -2,11 +2,12 @@ package org.example.GUI;
 
 import com.formdev.flatlaf.FlatClientProperties;
 import org.example.GUI.Components.Clickable;
+import org.example.GUI.Components.CustomColors;
+import org.example.GUI.Components.StickyNote.CreateStickyNoteForm;
+import org.example.GUI.Components.StickyNote.StickyNoteForm;
 import org.example.PriorityTask;
-import org.example.Task;
 import org.example.TaskManagerExc;
 
-import javax.crypto.Cipher;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
@@ -21,7 +22,8 @@ public class Dashboard extends JPanel implements Clickable {
 
     private final JFrame frame;
     private JPanel leftPanel, rightPanel;
-    Point startPt;
+    private Point startPt;
+
 
 
 
@@ -73,7 +75,7 @@ public class Dashboard extends JPanel implements Clickable {
             // Add the panels to the main frame
             add(leftPanel);
             add(rightPanel);
-            filterTasks(new ArrayList<>(List.of(new String[]{"Not Complete"})));
+            filterTasksAndClasses(new ArrayList<>(List.of("Not Complete")), new ArrayList<>(List.of("All")));
 
             revalidate();
             repaint();
@@ -113,18 +115,17 @@ public class Dashboard extends JPanel implements Clickable {
 
         switch (task.getPriority()) {
             case 1: // Urgent
-                backgroundColor = "@urgent"; // Light red
+                backgroundColor = "@urgent";
                 break;
             case 2: // Default
-                backgroundColor = "@normal"; // Light yellow
+                backgroundColor = "@normal";
                 break;
             case 3: // Distant
-                backgroundColor = "@distant"; // Light green
+                backgroundColor = "@distant";
                 break;
             case 0: // None
             default:
-                backgroundColor = "@none"; // White
-                break;
+                backgroundColor = "@none";
         }
 
         stickyNotePanel.putClientProperty(FlatClientProperties.STYLE,
@@ -180,7 +181,7 @@ public class Dashboard extends JPanel implements Clickable {
 
         try {
             // Attempt to convert the subject color string to a Color object
-            Color color = (Color) Color.class.getField(task.getLegend()[0]).get(null);
+            Color color = (Color) CustomColors.class.getField(task.getLegend()[0]).get(null);
             legendDot.setForeground(color); // Apply subject color to the legend dot
         } catch (Exception e) {
             // If the subjectColor is invalid or not found, set to a default color (e.g., gray)
@@ -300,8 +301,7 @@ public class Dashboard extends JPanel implements Clickable {
         classLabel.putClientProperty(FlatClientProperties.STYLE, "font: bold +1");
 
         // Multi-select list for classes
-        String[] classes = {"Class 1", "Class 2", "Class 3"};
-        JList<String> classFilter = new JList<>(classes);
+        JList<String> classFilter = new JList<>(TaskManagerExc.getClasses());
         classFilter.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         classFilter.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         classFilter.setFixedCellWidth(125);
@@ -309,10 +309,11 @@ public class Dashboard extends JPanel implements Clickable {
         classFilter.putClientProperty(FlatClientProperties.STYLE,
                 "font: medium;" +
                         "background: lighten(@background, 10%);" +
-                        "selectionBackground: lighten(@background, 5%); " +
-                        "selectionInactiveBackground: lighten(@background, 20%)");
+                        "selectionBackground: lighten(@stickyNote, 5%); " +
+                        "selectionInactiveBackground: lighten(@stickyNote, 5%)");
         classFilter.setAlignmentX(Component.CENTER_ALIGNMENT); // Center the list horizontally
-
+        classFilter.setToolTipText("Class Filter");
+        classFilter.setSelectedIndex(0);
 
         JLabel completionLabel = new JLabel("Completion");
         completionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -329,11 +330,30 @@ public class Dashboard extends JPanel implements Clickable {
                         "background: lighten(@background, 10%)");
         statusFilter.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Adding a listener for the statusFilter JList
+        // Adding a listener for the statusFilter JComboBox (for statuses like "Complete", "Not Complete", etc.)
         statusFilter.addActionListener(e -> {
-            String selected = (String) statusFilter.getSelectedItem();
-            filterTasks(new ArrayList<>(List.of(selected)));
+            // Get selected statuses
+            String selectedStatus = (String) statusFilter.getSelectedItem();
+
+            // Get selected classes from classFilter JList
+            List<String> selectedClasses = classFilter.getSelectedValuesList();
+            // Filter based on both selected statuses and selected classes
+            filterTasksAndClasses(new ArrayList<>(List.of(selectedStatus)), new ArrayList<>(selectedClasses));
         });
+
+        // Adding a listener for the classFilter JList
+        classFilter.addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                // Get selected classes from classFilter JList
+                List<String> selectedClasses = classFilter.getSelectedValuesList();  // Works for JList
+                // Get selected status from statusFilter JComboBox
+                String selectedStatus = (String) statusFilter.getSelectedItem();  // Use getSelectedItem for single-selection
+                // Filter based on both selected statuses and selected classes
+                filterTasksAndClasses(new ArrayList<>(List.of(selectedStatus)), new ArrayList<>(selectedClasses));
+            }
+        });
+
+
 
         // Add the components to the menu panel
         menuPanel.add(addButton);
@@ -363,12 +383,13 @@ public class Dashboard extends JPanel implements Clickable {
         return rightPanel;
     }
 
-    private void filterTasks(ArrayList<String> selectedStatuses) {
+    private void filterTasksAndClasses(ArrayList<String> selectedStatuses, ArrayList<String> selectedClasses) {
         leftPanel.removeAll(); // Clear existing sticky notes
 
         for (PriorityTask task : TaskManagerExc.getTaskList()) {
             boolean shouldDisplay = false;
 
+            // Filter by status
             if (selectedStatuses.contains("All")) {
                 shouldDisplay = true;
             } else if (selectedStatuses.contains("Complete") && task.isCompleted()) {
@@ -377,6 +398,29 @@ public class Dashboard extends JPanel implements Clickable {
                 shouldDisplay = true;
             }
 
+            // Filter by class (only if the status filter allowed the task to be displayed)
+            if (shouldDisplay) {
+                if (selectedClasses.contains("All")) {
+                    shouldDisplay = true;
+                } else {
+                    String[] taskLegend = task.getLegend();
+                    if (taskLegend != null && taskLegend.length > 0) {
+                        for (String className : selectedClasses) {
+                            if (className.equals(taskLegend[1])) { // Compare the selected class with the task's legend
+                                shouldDisplay = true;
+                                break; // Stop checking once a match is found
+                            } else {
+                                shouldDisplay = false;
+                            }
+                        }
+                    } else {
+                        shouldDisplay = false; // If no class matches or taskLegend is null
+                    }
+                }
+
+            }
+
+            // If both status and class filters allow the task to be displayed, add the sticky note
             if (shouldDisplay) {
                 JPanel notePanel = (JPanel) stickyNote(task);
                 notePanel.setPreferredSize(new Dimension(notePanel.getPreferredSize().width, notePanel.getPreferredSize().height));
@@ -389,6 +433,8 @@ public class Dashboard extends JPanel implements Clickable {
         leftPanel.revalidate();
         leftPanel.repaint();
     }
+
+
 
 
     @Override
