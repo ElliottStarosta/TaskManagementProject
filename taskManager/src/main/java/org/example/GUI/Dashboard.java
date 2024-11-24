@@ -109,9 +109,26 @@ public class Dashboard extends JPanel implements Clickable {
         int stickyNoteWidth = Math.max(260, (hasTwoDates ? 195 : 0) + dueDateWidth);
 
         stickyNotePanel.setPreferredSize(new Dimension(stickyNoteWidth, 150));
+        String backgroundColor;
+
+        switch (task.getPriority()) {
+            case 1: // Urgent
+                backgroundColor = "@urgent"; // Light red
+                break;
+            case 2: // Default
+                backgroundColor = "@normal"; // Light yellow
+                break;
+            case 3: // Distant
+                backgroundColor = "@distant"; // Light green
+                break;
+            case 0: // None
+            default:
+                backgroundColor = "@none"; // White
+                break;
+        }
 
         stickyNotePanel.putClientProperty(FlatClientProperties.STYLE,
-                "arc:20;" + "[dark]background:darken(@stickyNote,5%)");
+                "arc:20;" + "[dark]background:" + backgroundColor);
 
         // Name Label (Top Left)
         JLabel nameLabel = new JLabel(task.getName());
@@ -143,7 +160,7 @@ public class Dashboard extends JPanel implements Clickable {
         JPanel legendPanel = new JPanel();
         legendPanel.setLayout(new BoxLayout(legendPanel, BoxLayout.X_AXIS)); // Horizontal alignment
         legendPanel.putClientProperty(FlatClientProperties.STYLE,
-                "arc:20;" + "[dark]background:darken(@stickyNote,5%)");
+                "arc:20;" + "[dark]background:" + backgroundColor);
         legendPanel.setBounds(10, 110, 200, 40); // Adjusted width and height for spacing
 
         // Legend Dot
@@ -305,6 +322,7 @@ public class Dashboard extends JPanel implements Clickable {
         // Multi-select list for task status
         JComboBox<String> statusFilter = new JComboBox<>(new String[]{"All", "Complete", "Not Complete"});
         statusFilter.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        statusFilter.setSelectedItem("Not Complete");
 
         statusFilter.putClientProperty(FlatClientProperties.STYLE,
                 "font: medium;" +
