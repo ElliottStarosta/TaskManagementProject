@@ -11,140 +11,168 @@ import raven.datetime.component.date.DateSelectionListener;
 
 import javax.swing.*;
 import java.awt.*;
-
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 public class StickyNoteForm extends JPanel {
 
-    private JTextField nameField;
+    private JTextField titleField;
     private JTextArea descriptionArea;
     private JCheckBox isCompletedCheckBox;
-    private JComboBox<String> subjectPackageComboBox;
-    private JButton saveBtn;
-
+    private JComboBox<String> subjectComboBox;
+    private JComboBox<String> priorityComboBox;
     private JFormattedTextField editor;
-
     private LocalDate[] dateRange;
-
     private JFrame frame;
-
     private Task task;
 
     public StickyNoteForm(JFrame frame, Task task) {
-        init();
         this.frame = frame;
         this.task = task;
+        init();
     }
 
     private void init() {
-        // Set layout manager
-        setLayout(new MigLayout("fill,insets 20", "[center]", "[center]"));
+        setLayout(new MigLayout("fill, insets 20", "[grow, center]", "[][][][][][][grow][]"));
+        setPreferredSize(new Dimension(800, 600));
 
-        // Initialize components
-        nameField = new JTextField(20);
+        // Title Section
+        titleField = new JTextField(20);
+
+        titleField.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "New Task");
+        titleField.putClientProperty(FlatClientProperties.STYLE, "font: bold +20");
+        titleField.setBackground(new Color(0, 0, 0, 0));
+        titleField.setPreferredSize(new Dimension(titleField.getPreferredSize().width, 40));
+        titleField.setBorder(BorderFactory.createEmptyBorder());
+        titleField.setText(task.getName());
+
+        // Description Section
+        JLabel descriptionLabel = new JLabel("Description");
+        descriptionLabel.putClientProperty(FlatClientProperties.STYLE, "font: bold +10");
         descriptionArea = new JTextArea(5, 20);
-        isCompletedCheckBox = new JCheckBox("Is Completed");
-        subjectPackageComboBox = new JComboBox<>(TaskManagerExc.getSubjectFilters().toArray(new String[0]));
-        saveBtn = new JButton("Save");
 
-
-
-        // Style for text area and text field
         descriptionArea.setLineWrap(true);
         descriptionArea.setWrapStyleWord(true);
-        descriptionArea.setFont(new Font("Arial", Font.PLAIN, 14));
+        descriptionArea.putClientProperty(FlatClientProperties.STYLE,"font: bold +3");
 
-        // Set placeholders for text fields
-        nameField.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "New Task");
-        nameField.putClientProperty(FlatClientProperties.STYLE, "font: bold +10");
-        nameField.setBackground(new Color(0, 0, 0, 0));
-        nameField.setPreferredSize(new Dimension(nameField.getPreferredSize().width, 40));
-        nameField.setBorder(BorderFactory.createEmptyBorder());
-        descriptionArea.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Enter Course Description");
-
-
+        descriptionArea.setMargin(new Insets(10,10,0,10));
+        descriptionArea.setText(task.getDescription());
+        // Date Picker Section
+        JLabel dateLabel = new JLabel("Date");
+        dateLabel.putClientProperty(FlatClientProperties.STYLE, "font: bold +10");
 
         DatePicker datePicker = new DatePicker();
         datePicker.setDateSelectionMode(DatePicker.DateSelectionMode.BETWEEN_DATE_SELECTED);
-        datePicker.setSeparator(" to date ");
+        datePicker.setSeparator(" to ");
         datePicker.setUsePanelOption(true);
-
-        editor = new JFormattedTextField();
-        editor.putClientProperty(FlatClientProperties.STYLE,"background:lighten(@background,5%);borderColor: @background");
         datePicker.setEditor(editor);
         datePicker.setDateSelectionAble(localDate -> !localDate.isBefore(LocalDate.now()));
-
-
         datePicker.addDateSelectionListener(new DateSelectionListener() {
             @Override
             public void dateSelected(DateEvent dateEvent) {
                 dateRange = datePicker.getSelectedDateRange();
             }
         });
+        if (task.getDueDateRange().length == 2) {
+            datePicker.setSelectedDateRange(task.getDueDateRange()[0],task.getDueDateRange()[1]);
+        } else {
+            datePicker.setSelectedDateRange(task.getDueDateRange()[0],task.getDueDateRange()[0]);
 
-        saveBtn.addActionListener(e -> handleSave());
+        }
 
-        // Create panel with MigLayout
-        JPanel panel = new JPanel(new MigLayout("wrap, fillx, insets 35 45 30 45", "[fill, 360]"));
-        panel.putClientProperty(FlatClientProperties.STYLE, "background: darken(@background,3%); arc:10"); // Sets a blue background
 
-        // Adding components to the panel
-        panel.add(nameField);
-        panel.add(new JSeparator(), "gapy 10 10");
+        // Subject Section
+        JLabel subjectLabel = new JLabel("Subject");
+        subjectLabel.putClientProperty(FlatClientProperties.STYLE, "font: bold +10");
+        subjectComboBox = new JComboBox<>(TaskManagerExc.getSubjectFilters().toArray(new String[0]));
+        priorityComboBox = new JComboBox<>(new String[]{"Normal","Urgent","Normal"});
 
-        panel.add(new JLabel("Description"), "gapy 10");
-        panel.add(new JScrollPane(descriptionArea), "height 100px");
-//        panel.add(startDateBtn, "gapy 10");
-//
-//        panel.add(endDateBtn, "gapy 10");
-        panel.add(editor,"gapy 10");
-        panel.add(new JSeparator(), "gapy 10 10");
+        subjectComboBox.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        priorityComboBox.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
-        panel.add(isCompletedCheckBox);
-        panel.add(new JLabel("Subject Package"), "gapy 10");
-        panel.add(subjectPackageComboBox);
+        // Completed Checkbox
+        isCompletedCheckBox = new JCheckBox("Completed");
+        isCompletedCheckBox.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        isCompletedCheckBox.setBackground(Color.WHITE);
 
-        panel.add(saveBtn, "gapy 20");
+        // Buttons Section
+        JButton closeButton = new JButton("Close");
+        closeButton.setPreferredSize(new Dimension(100, 30));  // Increased the height of the button
+        closeButton.putClientProperty(FlatClientProperties.STYLE, "font: bold +2; background: lighten(@background, 20%)");
+        closeButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        closeButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        closeButton.addActionListener(e -> FormsManager.getInstance().showForm(new Dashboard(frame )));
 
-        add(panel);
+        JButton saveButton = new JButton("Save");
+        saveButton.setPreferredSize(new Dimension(100, 30));  // Increased the height of the button
+        saveButton.putClientProperty(FlatClientProperties.STYLE, "font: bold +2; background: lighten(@background, 20%)");
+        saveButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        saveButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        saveButton.addActionListener(e -> handleSave());
+
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+        buttonPanel.setOpaque(false);
+        buttonPanel.add(closeButton);
+        buttonPanel.add(saveButton);
+
+        // Add Components to Panel
+        add(titleField, "wrap, growx"); // Title field takes up the available space in the first column
+        add(descriptionLabel, "wrap, growx, gapy 20");
+        add(new JScrollPane(descriptionArea), "wrap, growx, height 100px, gapy 10");
+        add(dateLabel, "wrap, growx, gapy 20");
+        add(datePicker, "wrap, growx, gapy 20");
+        add(subjectLabel, "wrap, growx, gapy 20");
+        add(subjectComboBox, "wrap, width 20%, align left");
+        add(buttonPanel, "dock south");
     }
 
-    // Method to handle the Start Date selection
-    private void pickStartDate() {
-        // Code to open a date picker dialog
-        JOptionPane.showMessageDialog(this, "Start Date Picker opened");
+
+    private void handlePrioritySelection(int priority) {
+        JOptionPane.showMessageDialog(this, "Priority set to " + priority + " stars!");
     }
 
-    // Method to handle the End Date selection
-    private void pickEndDate() {
-        // Code to open a date picker dialog
-        JOptionPane.showMessageDialog(this, "End Date Picker opened");
-    }
-
-    // Method to handle saving the data
     private void handleSave() {
-        String name = nameField.getText();
+        String title = titleField.getText();
         String description = descriptionArea.getText();
         boolean isCompleted = isCompletedCheckBox.isSelected();
-        String subjectPackage = (String) subjectPackageComboBox.getSelectedItem();
+        String subject = (String) subjectComboBox.getSelectedItem();
 
-        if (name.isEmpty() || description.isEmpty() || dateRange == null) {
-            JOptionPane.showMessageDialog(this, "Please ensure all required fields are filled");
+        if (title.isEmpty() || description.isEmpty() || dateRange == null) {
+            JOptionPane.showMessageDialog(this, "Please ensure all fields are filled correctly.");
             return;
         }
 
-        if (dateRange.length == 2) {
-            Task task = new Task(name,description,dateRange[0],dateRange[1],isCompleted,"blue",subjectPackage);
+        task.setName(title);
+        task.setDescription(description);
+        task.setLegend("Blue", subject);
+        task.setDueDate(dateRange[0], dateRange[1]);
+
+        // If the task is marked as completed, ask the user if they are done with it
+        int response = JOptionPane.showConfirmDialog(
+                this,
+                "Are you done with the task?",
+                "Task Completion",
+                JOptionPane.YES_NO_OPTION
+        );
+
+        if (response == JOptionPane.YES_OPTION) {
+            // User chose "Yes", delete the task from the JSON file
+//            WritingUtil.deleteTaskFromJSON(task);
+            task.setComplete(true);
+//            JOptionPane.showMessageDialog(this, "Task deleted successfully!");
+            JOptionPane.showMessageDialog(this, "Task completed successfully");
         } else {
-            Task task = new Task(name,description,dateRange[0],isCompleted,"blue",subjectPackage);
+            // User chose "No", just write the task without deleting
+//            JOptionPane.showMessageDialog(this, "Task saved without deletion.");
         }
 
+        // Write all tasks (including the possibly updated one) back to the JSON file
         WritingUtil.writeTasksToJSON();
-        JOptionPane.showMessageDialog(this, "Course details saved successfully");
+
+
+        // Update the UI
         frame.validate();
         frame.repaint();
         FormsManager.getInstance().showForm(new Dashboard(frame));
     }
-}
 
+}

@@ -102,9 +102,63 @@ public class WritingUtil {
 
         try {
             objectMapper.writerWithDefaultPrettyPrinter().writeValue(new File(TASKS_PATH), taskArray);
+
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
+    public static void deleteTaskFromJSON(Task taskToDelete) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        ArrayList<Task> tasks = loadTasksFromJSON();  // Load existing tasks from the JSON file
+
+        // Remove the task that matches the taskToDelete
+        tasks.removeIf(task -> task.getTaskSummary().equals(taskToDelete.getTaskSummary()));
+
+        // Write the updated list of tasks back to the JSON file
+        writeUpdatedTasksToJSON(tasks, objectMapper);
+
+    }
+
+    private static void writeUpdatedTasksToJSON(ArrayList<Task> tasks, ObjectMapper objectMapper) {
+        ArrayNode taskArray = objectMapper.createArrayNode();
+
+        // Convert each task into a JSON node and add it to the array
+        for (Task task : tasks) {
+            ObjectNode taskNode = objectMapper.createObjectNode()
+                    .put("name", task.getName())
+                    .put("description", task.getDescription());
+
+            // Add legend
+            ObjectNode legendNode = taskNode.putObject("legend")
+                    .put("color", task.getLegend()[0])
+                    .put("subject", task.getLegend()[1]);
+
+            // Add due date or date range
+            LocalDate[] dueDateRange = task.getDueDateRange();
+            ObjectNode dueDateNode = taskNode.putObject("dueDate");
+            if (dueDateRange.length == 2) {
+                dueDateNode.put("startDate", dueDateRange[0].toString());
+                dueDateNode.put("endDate", dueDateRange[1].toString());
+            } else if (dueDateRange.length == 1) {
+                dueDateNode.put("startDate", dueDateRange[0].toString());
+            }
+
+            // Add completion status and priority
+            taskNode.put("isCompleted", task.isCompleted());
+            taskNode.put("priority", task instanceof PriorityTask ? ((PriorityTask) task).getPriority() : 0);
+
+            taskArray.add(taskNode);
+        }
+
+        // Write the updated array to the JSON file
+        try {
+            objectMapper.writerWithDefaultPrettyPrinter().writeValue(new File(TASKS_PATH), taskArray);
+            new TaskManagerExc();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
 }

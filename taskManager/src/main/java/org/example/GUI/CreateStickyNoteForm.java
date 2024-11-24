@@ -45,6 +45,9 @@ public class CreateStickyNoteForm extends JPanel {
         subjectPackageComboBox = new JComboBox<>(TaskManagerExc.getSubjectFilters().toArray(new String[0]));
         priorityComboBox = new JComboBox<>(new String[]{"Normal","Urgent","Normal"});
 
+        subjectPackageComboBox.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        priorityComboBox.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
         saveBtn = new JButton("Save");
 
         // Style for text area and text field
@@ -99,7 +102,9 @@ public class CreateStickyNoteForm extends JPanel {
         panel.add(isCompletedCheckBox);
         panel.add(new JLabel("Subject Package"), "gapy 10");
         panel.add(subjectPackageComboBox);
+
         panel.add(new JSeparator(), "gapy 10 10");
+        panel.add(new JLabel("Priority"), "gapy 10");
         panel.add(priorityComboBox);
         panel.add(saveBtn, "gapy 20");
 
@@ -131,9 +136,9 @@ public class CreateStickyNoteForm extends JPanel {
         }
 
         if (dateRange.length == 2) {
-            Task task = new Task(name,description,dateRange[0],dateRange[1],isCompleted,"blue",subjectPackage);
+            new Task(name,description,dateRange[0],dateRange[1],isCompleted,"blue",subjectPackage);
         } else {
-            Task task = new Task(name,description,dateRange[0],isCompleted,"blue",subjectPackage);
+            new Task(name,description,dateRange[0],isCompleted,"blue",subjectPackage);
         }
 
         WritingUtil.writeTasksToJSON();

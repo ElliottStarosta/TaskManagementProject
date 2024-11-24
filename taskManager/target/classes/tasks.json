@@ -1,16 +1,27 @@
-[
-  {
-    "name": "Make UML",
-    "description": "doing shit",
-    "legend": {
-      "color": "BLUE",
-      "subject": "Math"
-    },
-    "dueDate": {
-      "startDate": "2024-11-23",
-      "endDate": "2024-11-25"
-    },
-    "isCompleted": true,
-    "priority": 3
-  }
-]
+[ {
+  "name" : "GUI",
+  "description" : "GUIa",
+  "legend" : {
+    "color" : "BLUE",
+    "subject" : "Math"
+  },
+  "dueDate" : {
+    "startDate" : "2024-11-23",
+    "endDate" : "2024-11-23"
+  },
+  "isCompleted" : false,
+  "priority" : 0
+}, {
+  "name" : "GUI",
+  "description" : "GUI",
+  "legend" : {
+    "color" : "BLUE",
+    "subject" : "Math"
+  },
+  "dueDate" : {
+    "startDate" : "2024-11-23",
+    "endDate" : "2024-11-23"
+  },
+  "isCompleted" : true,
+  "priority" : 0
+} ]

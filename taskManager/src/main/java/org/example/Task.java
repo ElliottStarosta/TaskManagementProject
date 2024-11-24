@@ -6,22 +6,19 @@ import java.time.format.DateTimeFormatter;
 public class Task {
     private String name;
     private String description;
-    private String[] legend;  // Array to store subject color and type of class
-    private LocalDate[] dueDateRange;  // Use an array to store either single date or range
+    private String[] legend;
+    private LocalDate[] dueDateRange;
     private boolean isCompleted;
+
 
     // Constructor for single date
     public Task(String name, String description, LocalDate dueDate, boolean isCompleted, String color, String subject) {
-        setName(name);
-        setDescription(description);
-        setDueDate(dueDate);
-        setComplete(isCompleted);
-        setLegend(color, subject);
-        TaskManagerExc.addTask(this);
+        this(name,description,dueDate,dueDate,isCompleted,color,subject);
     }
 
     // Constructor for date range (start and end date)
     public Task(String name, String description, LocalDate startDate, LocalDate endDate, boolean isCompleted, String color, String subject) {
+
         setName(name);
         setDescription(description);
         setDueDate(startDate, endDate);  // Store both start and end dates
@@ -99,9 +96,10 @@ public class Task {
         setComplete(true);
     }
 
-    private void setComplete(boolean isCompleted) {
+    public void setComplete(boolean isCompleted) {
         this.isCompleted = isCompleted;
     }
+
 
     public String getTaskSummary() {
         return "Task: " + name + "\nDescription: " + description +

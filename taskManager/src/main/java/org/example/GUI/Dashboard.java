@@ -11,10 +11,15 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.JList;
+
 
 public class Dashboard extends JPanel implements Clickable {
 
     private final JFrame frame;
+    private JPanel leftPanel, rightPanel;
     Point startPt;
 
 
@@ -30,7 +35,7 @@ public class Dashboard extends JPanel implements Clickable {
             setLayout(new BoxLayout(Dashboard.this, BoxLayout.X_AXIS));
 
             // Left panel to hold the sticky notes
-            JPanel leftPanel = new JPanel();
+            leftPanel = new JPanel();
             leftPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10)); // Side by side with 10px gap
             leftPanel.setPreferredSize(new Dimension((int) (frameWidth * mainWidth), frameHeight));
 
@@ -47,7 +52,7 @@ public class Dashboard extends JPanel implements Clickable {
             }
 
             // Right panel
-            JPanel rightPanel = new JPanel();
+            rightPanel = new JPanel();
             rightPanel.putClientProperty(FlatClientProperties.STYLE, "background: darken(@background, 5%)");
             rightPanel.setPreferredSize(new Dimension((int)(frameWidth * (1 - mainWidth)), frameHeight));
             rightPanel.setLayout(new GridBagLayout());
@@ -67,6 +72,7 @@ public class Dashboard extends JPanel implements Clickable {
             // Add the panels to the main frame
             add(leftPanel);
             add(rightPanel);
+            filterTasks(new ArrayList<>(List.of(new String[]{"Not Complete"})));
 
             revalidate();
             repaint();
@@ -94,7 +100,6 @@ public class Dashboard extends JPanel implements Clickable {
         FontMetrics metrics = stickyNotePanel.getFontMetrics(dueDateFont);
         int dueDateWidth = metrics.stringWidth(dueDateText);
 
-        // Set the preferred width dynamically, ensuring it's large enough for the due date
 
         // Check if task has two dates (start and end date)
         LocalDate[] dueDateRange = task.getDueDateRange(); // Get the date range
@@ -164,8 +169,14 @@ public class Dashboard extends JPanel implements Clickable {
             legendDot.setForeground(Color.GRAY);
         }
 
-
         legendPanel.add(legendText);
+
+        if (task.isCompleted()) {
+            stickyNotePanel.putClientProperty(FlatClientProperties.STYLE,
+                    "arc:20;" + "[dark]background:darken(@stickyNote,15%)");
+            legendPanel.putClientProperty(FlatClientProperties.STYLE,
+                    "arc:20;" + "[dark]background:darken(@stickyNote,15%)");
+        }
 
         stickyNotePanel.add(legendPanel);
 
@@ -292,18 +303,19 @@ public class Dashboard extends JPanel implements Clickable {
 
 
         // Multi-select list for task status
-        String[] statuses = {"All", "Complete", "Not Complete"};
-        JList<String> statusFilter = new JList<>(statuses);
-        statusFilter.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        JComboBox<String> statusFilter = new JComboBox<>(new String[]{"All", "Complete", "Not Complete"});
         statusFilter.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        statusFilter.setFixedCellWidth(125);
-        statusFilter.setFixedCellHeight(50);
+
         statusFilter.putClientProperty(FlatClientProperties.STYLE,
                 "font: medium;" +
-                        "background: lighten(@background, 10%);" +
-                        "selectionBackground: lighten(@background, 5%); " +
-                        "selectionInactiveBackground: lighten(@background, 20%)");
+                        "background: lighten(@background, 10%)");
         statusFilter.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        // Adding a listener for the statusFilter JList
+        statusFilter.addActionListener(e -> {
+            String selected = (String) statusFilter.getSelectedItem();
+            filterTasks(new ArrayList<>(List.of(selected)));
+        });
 
         // Add the components to the menu panel
         menuPanel.add(addButton);
@@ -332,6 +344,34 @@ public class Dashboard extends JPanel implements Clickable {
 
         return rightPanel;
     }
+
+    private void filterTasks(ArrayList<String> selectedStatuses) {
+        leftPanel.removeAll(); // Clear existing sticky notes
+
+        for (Task task : TaskManagerExc.getTaskList()) {
+            boolean shouldDisplay = false;
+
+            if (selectedStatuses.contains("All")) {
+                shouldDisplay = true;
+            } else if (selectedStatuses.contains("Complete") && task.isCompleted()) {
+                shouldDisplay = true;
+            } else if (selectedStatuses.contains("Not Complete") && !task.isCompleted()) {
+                shouldDisplay = true;
+            }
+
+            if (shouldDisplay) {
+                JPanel notePanel = (JPanel) stickyNote(task);
+                notePanel.setPreferredSize(new Dimension(notePanel.getPreferredSize().width, notePanel.getPreferredSize().height));
+                leftPanel.add(notePanel);
+                makeDraggable(notePanel);
+            }
+        }
+
+        // Update UI
+        leftPanel.revalidate();
+        leftPanel.repaint();
+    }
+
 
     @Override
     public void handleButtonEvent() {
