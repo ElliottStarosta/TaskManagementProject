@@ -2,6 +2,7 @@ package org.example.GUI;
 
 import com.formdev.flatlaf.FlatClientProperties;
 import net.miginfocom.swing.MigLayout;
+import org.example.PriorityTask;
 import org.example.Task;
 import org.example.TaskManagerExc;
 import org.example.WritingUtil;
@@ -18,12 +19,13 @@ public class CreateStickyNoteForm extends JPanel {
 
     private JTextField nameField;
     private JTextArea descriptionArea;
-    private JCheckBox isCompletedCheckBox;
     private JComboBox<String> subjectPackageComboBox;
     private JComboBox<String> priorityComboBox;
     private JButton saveBtn;
 
     private JFormattedTextField editor;
+
+    private int priorityValue;
 
     private LocalDate[] dateRange;
 
@@ -41,9 +43,28 @@ public class CreateStickyNoteForm extends JPanel {
         // Initialize components
         nameField = new JTextField(20);
         descriptionArea = new JTextArea(5, 20);
-        isCompletedCheckBox = new JCheckBox("Is Completed");
         subjectPackageComboBox = new JComboBox<>(TaskManagerExc.getSubjectFilters().toArray(new String[0]));
-        priorityComboBox = new JComboBox<>(new String[]{"Normal","Urgent","Normal"});
+        priorityComboBox = new JComboBox<>(new String[]{"Normal","Urgent","Distant","None"});
+
+        // Action listener to get priority value
+        priorityComboBox.addActionListener(e -> {
+            String selected = (String) priorityComboBox.getSelectedItem();
+
+            switch (selected) {
+                case "Urgent":
+                    priorityValue = 1;
+                    break;
+                case "Distant":
+                    priorityValue = 3;
+                    break;
+                case "None":
+                    priorityValue = 0;
+                    break;
+                default:
+                    priorityValue = 2;
+            }
+            System.out.println("Selected priority value: " + priorityValue); // For debugging
+        });
 
         subjectPackageComboBox.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         priorityComboBox.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -99,7 +120,6 @@ public class CreateStickyNoteForm extends JPanel {
         panel.add(editor,"gapy 10");
         panel.add(new JSeparator(), "gapy 10 10");
 
-        panel.add(isCompletedCheckBox);
         panel.add(new JLabel("Subject Package"), "gapy 10");
         panel.add(subjectPackageComboBox);
 
@@ -127,7 +147,6 @@ public class CreateStickyNoteForm extends JPanel {
     private void handleSave() {
         String name = nameField.getText();
         String description = descriptionArea.getText();
-        boolean isCompleted = isCompletedCheckBox.isSelected();
         String subjectPackage = (String) subjectPackageComboBox.getSelectedItem();
 
         if (name.isEmpty() || description.isEmpty() || dateRange == null) {
@@ -136,9 +155,9 @@ public class CreateStickyNoteForm extends JPanel {
         }
 
         if (dateRange.length == 2) {
-            new Task(name,description,dateRange[0],dateRange[1],isCompleted,"blue",subjectPackage);
+            new PriorityTask(name,description,dateRange[0],dateRange[1],priorityValue,false,"blue",subjectPackage);
         } else {
-            new Task(name,description,dateRange[0],isCompleted,"blue",subjectPackage);
+            new PriorityTask(name,description,dateRange[0],dateRange[1],priorityValue,false,"blue",subjectPackage);
         }
 
         WritingUtil.writeTasksToJSON();

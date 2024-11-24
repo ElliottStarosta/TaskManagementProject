@@ -1,27 +1,14 @@
 [ {
-  "name" : "GUI",
-  "description" : "GUIa",
+  "name" : "adad",
+  "description" : "adad",
   "legend" : {
     "color" : "BLUE",
     "subject" : "Math"
   },
   "dueDate" : {
-    "startDate" : "2024-11-23",
-    "endDate" : "2024-11-23"
+    "startDate" : "2024-11-24",
+    "endDate" : "2024-11-24"
   },
   "isCompleted" : false,
-  "priority" : 0
-}, {
-  "name" : "GUI",
-  "description" : "GUI",
-  "legend" : {
-    "color" : "BLUE",
-    "subject" : "Math"
-  },
-  "dueDate" : {
-    "startDate" : "2024-11-23",
-    "endDate" : "2024-11-23"
-  },
-  "isCompleted" : true,
   "priority" : 0
 } ]

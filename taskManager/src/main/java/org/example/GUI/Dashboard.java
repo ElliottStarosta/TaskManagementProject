@@ -2,6 +2,7 @@ package org.example.GUI;
 
 import com.formdev.flatlaf.FlatClientProperties;
 import org.example.GUI.Components.Clickable;
+import org.example.PriorityTask;
 import org.example.Task;
 import org.example.TaskManagerExc;
 
@@ -40,7 +41,7 @@ public class Dashboard extends JPanel implements Clickable {
             leftPanel.setPreferredSize(new Dimension((int) (frameWidth * mainWidth), frameHeight));
 
             // Loop through the ArrayList of tasks and create sticky notes for each
-            for (Task task : TaskManagerExc.getTaskList()) {
+            for (PriorityTask task : TaskManagerExc.getTaskList()) {
                 JPanel notePanel = (JPanel) stickyNote(task);
                 notePanel.setPreferredSize(new Dimension(notePanel.getPreferredSize().width, notePanel.getPreferredSize().height));
 
@@ -87,7 +88,7 @@ public class Dashboard extends JPanel implements Clickable {
         this.frame = frame;
     }
 
-    public Component stickyNote(Task task) {
+    public Component stickyNote(PriorityTask task) {
         // Main panel for the sticky note
         JPanel stickyNotePanel = new JPanel();
 
@@ -247,7 +248,7 @@ public class Dashboard extends JPanel implements Clickable {
     }
 
     @Override
-    public void doubleClick(JPanel stickyNote, Task task) {
+    public void doubleClick(JPanel stickyNote, PriorityTask task) {
         stickyNote.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -257,7 +258,6 @@ public class Dashboard extends JPanel implements Clickable {
             }
         });
     }
-
 
     private Component menu(int frameWidth, int frameHeight) {
         // Create a panel to hold the menu components
@@ -348,7 +348,7 @@ public class Dashboard extends JPanel implements Clickable {
     private void filterTasks(ArrayList<String> selectedStatuses) {
         leftPanel.removeAll(); // Clear existing sticky notes
 
-        for (Task task : TaskManagerExc.getTaskList()) {
+        for (PriorityTask task : TaskManagerExc.getTaskList()) {
             boolean shouldDisplay = false;
 
             if (selectedStatuses.contains("All")) {

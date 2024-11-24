@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class TaskManagerExc implements TaskManager {
-    private static ArrayList<Task> taskList = new ArrayList<>();
+    private static ArrayList<PriorityTask> taskList = new ArrayList<>();
     private static ArrayList<String> subjectFilters = new ArrayList<>(List.of(new String[]{"Math", "Physics"}));
 
     public TaskManagerExc() {
@@ -13,11 +13,11 @@ public class TaskManagerExc implements TaskManager {
     }
 
 
-    public static void addTask(Task task) {
+    public static void addTask(PriorityTask task) {
         taskList.add(task);
     }
 
-    public static ArrayList<Task> getTaskList() {
+    public static ArrayList<PriorityTask> getTaskList() {
         return taskList;
     }
 
@@ -25,13 +25,12 @@ public class TaskManagerExc implements TaskManager {
         return subjectFilters;
     }
 
-    @Override
-    public void deleteTask(Task task) {
+    public static void deleteTask(Task task) {
         taskList.remove(task);
     }
 
     @Override
-    public List<Task> getTasksByType(boolean filter) {
+    public List<PriorityTask> getTasksByType(boolean filter) {
         if (filter) {
             return taskList.stream().filter(Task::isCompleted).collect(Collectors.toList());
         } else if (!(filter)) {

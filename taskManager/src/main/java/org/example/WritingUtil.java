@@ -13,8 +13,8 @@ import java.util.ArrayList;
 public class WritingUtil {
     public static final String TASKS_PATH = "src/main/resources/tasks.json";
 
-    public static ArrayList<Task> loadTasksFromJSON() {
-        ArrayList<Task> tasks = new ArrayList<>();
+    public static ArrayList<PriorityTask> loadTasksFromJSON() {
+        ArrayList<PriorityTask> tasks = new ArrayList<>();
         ObjectMapper objectMapper = new ObjectMapper();
 
         try {
@@ -44,19 +44,13 @@ public class WritingUtil {
                 }
 
                 // Create the appropriate task type
-                if (priority > 0) {
-                    if (endDate != null) {
-                        tasks.add(new PriorityTask(name, description, startDate, endDate, priority, isCompleted, subjectColor, typeOfClass));
-                    } else {
-                        tasks.add(new PriorityTask(name, description, startDate, priority, isCompleted, subjectColor, typeOfClass));
-                    }
+
+                if (endDate != null) {
+                    tasks.add(new PriorityTask(name, description, startDate, endDate, priority, isCompleted, subjectColor, typeOfClass));
                 } else {
-                    if (endDate != null) {
-                        tasks.add(new Task(name, description, startDate, endDate, isCompleted, subjectColor, typeOfClass));
-                    } else {
-                        tasks.add(new Task(name, description, startDate, isCompleted, subjectColor, typeOfClass));
-                    }
+                    tasks.add(new PriorityTask(name, description, startDate, priority, isCompleted, subjectColor, typeOfClass));
                 }
+
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -69,7 +63,7 @@ public class WritingUtil {
     public static void writeTasksToJSON() {
         ObjectMapper objectMapper = new ObjectMapper();
         ArrayNode taskArray = objectMapper.createArrayNode();
-        ArrayList<Task> tasks = TaskManagerExc.getTaskList();
+        ArrayList<PriorityTask> tasks = TaskManagerExc.getTaskList();
 
         for (Task task : tasks) {
             ObjectNode taskNode = objectMapper.createObjectNode()
@@ -110,7 +104,7 @@ public class WritingUtil {
 
     public static void deleteTaskFromJSON(Task taskToDelete) {
         ObjectMapper objectMapper = new ObjectMapper();
-        ArrayList<Task> tasks = loadTasksFromJSON();  // Load existing tasks from the JSON file
+        ArrayList<PriorityTask> tasks = loadTasksFromJSON();  // Load existing tasks from the JSON file
 
         // Remove the task that matches the taskToDelete
         tasks.removeIf(task -> task.getTaskSummary().equals(taskToDelete.getTaskSummary()));
@@ -120,7 +114,7 @@ public class WritingUtil {
 
     }
 
-    private static void writeUpdatedTasksToJSON(ArrayList<Task> tasks, ObjectMapper objectMapper) {
+    private static void writeUpdatedTasksToJSON(ArrayList<PriorityTask> tasks, ObjectMapper objectMapper) {
         ArrayNode taskArray = objectMapper.createArrayNode();
 
         // Convert each task into a JSON node and add it to the array

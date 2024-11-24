@@ -10,6 +10,7 @@ public class PriorityTask extends Task {
         super(name, description, dueDate, isCompleted, subjectColor, typeOfClass); // Pass typeOfClass
         this.priority = 3; // Default to Low
         setPriority(priority);
+        TaskManagerExc.addTask(this);
     }
 
     // Constructor for date range (startDate and endDate)
@@ -17,7 +18,9 @@ public class PriorityTask extends Task {
         super(name, description, startDate, endDate, isCompleted, subjectColor, typeOfClass); // Pass typeOfClass
         this.priority = 3; // Default to Low
         setPriority(priority);
+        TaskManagerExc.addTask(this);
     }
+
 
     // Getter for priority
     public int getPriority() {
@@ -26,7 +29,7 @@ public class PriorityTask extends Task {
 
     // Setter for priority with validation
     public void setPriority(int priority) {
-        this.priority = (priority >= 1 && priority <= 3) ? priority : 3; // Default to Low if invalid
+        this.priority = (priority >= 0 && priority <= 3) ? priority : 3; // Default to Low if invalid
     }
 
     // Override getTaskSummary to include priority

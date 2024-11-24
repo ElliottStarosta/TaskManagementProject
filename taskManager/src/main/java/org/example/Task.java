@@ -3,12 +3,13 @@ package org.example;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-public class Task {
+public abstract class Task {
     private String name;
     private String description;
     private String[] legend;
     private LocalDate[] dueDateRange;
     private boolean isCompleted;
+
 
 
     // Constructor for single date
@@ -21,10 +22,9 @@ public class Task {
 
         setName(name);
         setDescription(description);
-        setDueDate(startDate, endDate);  // Store both start and end dates
+        setDueDate(startDate, endDate);
         setComplete(isCompleted);
         setLegend(color, subject);
-        TaskManagerExc.addTask(this);
     }
 
     // Constructor for task with only name, due date, and subject color (no description)

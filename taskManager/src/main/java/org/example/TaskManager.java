@@ -3,11 +3,12 @@ package org.example;
 import java.util.List;
 
 public interface TaskManager {
-    static void addTask(Task task) {
+    static void addTask(PriorityTask task) {
         addTask(null);
     }
-    void deleteTask(Task task);
-    List<Task> getTasksByType(boolean filter);
+    static void deleteTask(PriorityTask task) {
+    }
+    List<PriorityTask> getTasksByType(boolean filter);
     void generateSummary();
 }
 
