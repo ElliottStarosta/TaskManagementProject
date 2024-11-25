@@ -1,9 +1,6 @@
 package org.example;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class TaskManagerExc implements TaskManager {
@@ -20,7 +17,7 @@ public class TaskManagerExc implements TaskManager {
         put("Economics", "GOLD");
     }};
 
-    private static String[] classes = legend.keySet().toArray(new String[0]);
+    private static String[] classes = Arrays.copyOfRange(legend.keySet().toArray(new String[0]), 1, legend.keySet().size());
     private static ArrayList<String> subjectFilters = new ArrayList<>(List.of(classes));
 
 
@@ -65,6 +62,10 @@ public class TaskManagerExc implements TaskManager {
     }
 
     public static String[] getClasses() {
+        return legend.keySet().toArray(new String[0]);
+    }
+
+    public static String[] getClassesNotes() {
         return classes;
     }
 
