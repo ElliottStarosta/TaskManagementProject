@@ -9,7 +9,6 @@ import org.example.tasks.TaskManagerExc;
 import javax.swing.*;
 import java.awt.*;
 
-
 public class Main extends JFrame {
 
     public Main() {

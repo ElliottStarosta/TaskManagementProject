@@ -1,0 +1,16 @@
+org\example\tasks\Task.class
+org\example\GUI\Components\CustomColors.class
+org\example\tasks\TaskManagerExc$1.class
+org\example\GUI\Dashboard$1.class
+org\example\GUI\Dashboard.class
+org\example\WritingUtil.class
+org\example\GUI\Components\StickyNote\EditableNote.class
+org\example\GUI\Dashboard$2.class
+org\example\tasks\TaskManagerExc.class
+org\example\GUI\Components\StickyNote\CreateNote$1.class
+org\example\tasks\PriorityTask.class
+org\example\GUI\Dashboard$3.class
+org\example\GUI\FormsManager.class
+org\example\GUI\Main.class
+org\example\GUI\Components\interfaces\Clickable.class
+org\example\GUI\Components\StickyNote\CreateNote.class

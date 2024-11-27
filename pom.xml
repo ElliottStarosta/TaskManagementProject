@@ -22,7 +22,7 @@
             <version>2.18.1</version>
         </dependency>
 
-        <!--form dev-->
+        <!-- FlatLaf -->
         <dependency>
             <groupId>com.formdev</groupId>
             <artifactId>flatlaf</artifactId>
@@ -39,21 +39,39 @@
             <version>2.137</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/com.miglayout/miglayout -->
+        <!-- MigLayout -->
         <dependency>
             <groupId>com.miglayout</groupId>
             <artifactId>miglayout</artifactId>
             <version>3.7.4</version>
         </dependency>
 
-
-        <!-- date picker -->
+        <!-- Date picker -->
         <dependency>
             <groupId>io.github.dj-raven</groupId>
             <artifactId>swing-datetime-picker</artifactId>
             <version>1.4.0</version>
         </dependency>
-
     </dependencies>
 
+    <build>
+        <plugins>
+            <!-- Exec Maven Plugin -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.5.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <mainClass>org.example.GUI.Main</mainClass>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
