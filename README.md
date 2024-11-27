@@ -36,7 +36,7 @@ Welcome to the **TaskManager Project**! This repository contains a Java-based ap
    ```
 2. Navigate to the project directory:
    ```bash
-   cd TaskManager
+   cd TaskManagementProject
    ```
 3. Install dependencies:
    ```bash
