@@ -176,6 +176,12 @@ public class EditableNote extends JPanel {
         String description = descriptionArea.getText();
         String subject = (String) subjectComboBox.getSelectedItem();
 
+
+        if (title.length() > 12) {
+            JOptionPane.showMessageDialog(this,"Please make the title shorter");
+            return;
+        }
+
         if (title.isEmpty() || description.isEmpty() || dateRange == null) {
             JOptionPane.showMessageDialog(this, "Please ensure all fields are filled correctly.");
             return;

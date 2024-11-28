@@ -140,16 +140,21 @@ public class CreateNote extends JPanel {
 
     // Method to handle saving the data
     private void handleSave() {
-        String name = nameField.getText();
+        String title = nameField.getText();
         String description = descriptionArea.getText();
         String subjectPackage = (String) subjectPackageComboBox.getSelectedItem();
 
-        if (name.isEmpty() || description.isEmpty() || dateRange == null) {
+        if (title.length() > 12) {
+            JOptionPane.showMessageDialog(this,"Please make the title shorter");
+            return;
+        }
+
+        if (title.isEmpty() || description.isEmpty() || dateRange == null) {
             JOptionPane.showMessageDialog(this, "Please ensure all required fields are filled");
             return;
         }
 
-        new PriorityTask(name, description, dateRange[0], dateRange[1], priorityValue, false, TaskManagerExc.getLegend().get(subjectPackage), subjectPackage);
+        new PriorityTask(title, description, dateRange[0], dateRange[1], priorityValue, false, TaskManagerExc.getLegend().get(subjectPackage), subjectPackage);
 
 
         WritingUtil.writeTasksToJSON();
