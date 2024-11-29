@@ -1,1 +1,14 @@
-[]
+[ {
+  "name" : "(S)Read",
+  "description" : "Combined task of: Read and WorkBook\n\nDescription of combined:\nHamlet 200-220\n\npage 67-100",
+  "legend" : {
+    "color" : "127,0,127",
+    "subject" : "Math/English"
+  },
+  "dueDate" : {
+    "startDate" : "2024-11-29",
+    "endDate" : "2024-12-01"
+  },
+  "isCompleted" : false,
+  "priority" : 1
+} ]

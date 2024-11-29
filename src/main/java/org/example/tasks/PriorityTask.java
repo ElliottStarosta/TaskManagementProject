@@ -3,7 +3,7 @@ package org.example.tasks;
 import java.time.LocalDate;
 
 public class PriorityTask extends Task {
-    private int priority; // 1 = High, 2 = Medium, 3 = Low, 0 = Normal
+    private int priority; // 1 = Urgent, 2 =Normal, 3 = Distant, 4 = None
 
     // Constructor for date range (startDate and endDate)
     public PriorityTask(String name, String description, LocalDate startDate, LocalDate endDate, int priority, boolean isCompleted, String subjectColor, String typeOfClass) {
@@ -21,10 +21,10 @@ public class PriorityTask extends Task {
 
     // Setter for priority with validation
     public void setPriority(int priority) {
-        if (priority >= 0 && priority <= 3) {
+        if (priority >= 1 && priority <= 4) {
             this.priority = priority;
         } else {
-            this.priority = 3; // Default to Low if invalid
+            this.priority = 4; // Default to none if invalid
         }
     }
 

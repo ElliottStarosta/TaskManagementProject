@@ -5,6 +5,7 @@ import org.example.GUI.Components.CustomColors;
 import org.example.GUI.Components.StickyNote.CreateNote;
 import org.example.GUI.Components.StickyNote.EditableNote;
 import org.example.GUI.Components.interfaces.Clickable;
+import org.example.WritingUtil;
 import org.example.tasks.PriorityTask;
 import org.example.tasks.TaskManagerExc;
 
@@ -25,6 +26,9 @@ public class Dashboard extends JPanel implements Clickable {
     private JPanel leftPanel, rightPanel;
     private Point startPt;
 
+    JList<String> classFilter;
+    JComboBox<String> statusFilter;
+
     public Dashboard(JFrame frame) {
         init();
         this.frame = frame;
@@ -36,7 +40,7 @@ public class Dashboard extends JPanel implements Clickable {
 
             int frameWidth = frame.getWidth();
             int frameHeight = frame.getHeight();
-            double mainWidth = 0.89;
+            double mainWidth = 0.89; // percentage of left panel
 
             setLayout(new BoxLayout(Dashboard.this, BoxLayout.X_AXIS));
 
@@ -89,6 +93,8 @@ public class Dashboard extends JPanel implements Clickable {
         // Main panel for the sticky note
         JPanel stickyNotePanel = new JPanel();
 
+        stickyNotePanel.putClientProperty("task",task);
+
         stickyNotePanel.setLayout(null); // Absolute positioning
         stickyNotePanel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
@@ -103,9 +109,9 @@ public class Dashboard extends JPanel implements Clickable {
         LocalDate[] dueDateRange = task.getDueDateRange(); // Get the date range
         boolean hasTwoDates = dueDateRange != null && dueDateRange.length == 2 && dueDateRange[0] != null && dueDateRange[1] != null;
 
-        int stickyNoteWidth = Math.max(260, (hasTwoDates ? 195 : 0) + dueDateWidth);
+        int stickyNoteWidth = Math.max(260, (hasTwoDates ? 235 : 0) + dueDateWidth);
 
-        stickyNotePanel.setPreferredSize(new Dimension(stickyNoteWidth, 150));
+        stickyNotePanel.setPreferredSize(new Dimension(stickyNoteWidth, 170));
         String backgroundColor;
 
         switch (task.getPriority()) {
@@ -118,7 +124,7 @@ public class Dashboard extends JPanel implements Clickable {
             case 3: // Distant
                 backgroundColor = "@distant";
                 break;
-            case 0: // None
+            case 4: // None
             default:
                 backgroundColor = "@none";
         }
@@ -130,15 +136,16 @@ public class Dashboard extends JPanel implements Clickable {
         JLabel nameLabel = new JLabel(task.getName());
         nameLabel.setBounds(13, 0, 200, 50);
         nameLabel.putClientProperty(FlatClientProperties.STYLE,
-                "font:bold +7;" + "[dark]foreground:@white");
+                "font:bold +6;" + "[dark]foreground:@white");
         stickyNotePanel.add(nameLabel);
 
         // Description Label (Below Name)
-        JLabel descriptionLabel = new JLabel(task.getDescription());
-        descriptionLabel.setBounds(13, 40, 280, 40); // Allow room for multi-line text
+        JLabel descriptionLabel = new JLabel("<html>" + task.getDescription().replace("\n", "<br>") + "</html>");
+        descriptionLabel.setBounds(13, 45, 280, 80);
         descriptionLabel.putClientProperty(FlatClientProperties.STYLE,
                 "font: $small.font;" + "[dark]foreground:lighten(@white,25%)");
         stickyNotePanel.add(descriptionLabel);
+
 
         // Due Date Label (Top Right)
         JLabel dueDateLabel = new JLabel(dueDateText);
@@ -148,7 +155,7 @@ public class Dashboard extends JPanel implements Clickable {
                 "font: $medium.font;" + "[dark]foreground:darken(@white,5%)");
 
         dueDateLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-        dueDateLabel.setBounds(180, 0, dueDateWidth, 50); // Adjust width based on due date length
+        dueDateLabel.setBounds(220, 0, dueDateWidth, 50);
         stickyNotePanel.add(dueDateLabel);
 
 
@@ -157,7 +164,7 @@ public class Dashboard extends JPanel implements Clickable {
         legendPanel.setLayout(new BoxLayout(legendPanel, BoxLayout.X_AXIS)); // Horizontal alignment
         legendPanel.putClientProperty(FlatClientProperties.STYLE,
                 "arc:20;" + "[dark]background:" + backgroundColor);
-        legendPanel.setBounds(10, 110, 200, 40); // Adjusted width and height for spacing
+        legendPanel.setBounds(10, 130, 200, 40);
 
         // Legend Dot
         JLabel legendDot = new JLabel("\u25CF"); // Unicode for a filled circle
@@ -176,7 +183,7 @@ public class Dashboard extends JPanel implements Clickable {
 
         try {
             // Attempt to convert the subject color string to a Color object
-            Color color = (Color) CustomColors.class.getField(task.getLegend()[0]).get(null);
+            Color color = CustomColors.getColor(task.getLegend()[0]);
             legendDot.setForeground(color); // Apply subject color to the legend dot
         } catch (Exception e) {
             // If the subjectColor is invalid or not found, set to a default color (e.g., gray)
@@ -201,11 +208,9 @@ public class Dashboard extends JPanel implements Clickable {
 
     @Override
     public void makeDraggable(JPanel stickyNote) {
-
         stickyNote.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                // Capture the initial mouse press location relative to the sticky note's position
                 startPt = SwingUtilities.convertPoint(stickyNote, e.getPoint(), stickyNote.getParent());
             }
         });
@@ -213,51 +218,127 @@ public class Dashboard extends JPanel implements Clickable {
         stickyNote.addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
-                Point location = SwingUtilities.convertPoint(stickyNote, e.getPoint(), stickyNote.getParent());
+                Point currentPt = SwingUtilities.convertPoint(stickyNote, e.getPoint(), stickyNote.getParent());
+                int deltaX = currentPt.x - startPt.x;
+                int deltaY = currentPt.y - startPt.y;
 
-                if (stickyNote.getParent().getBounds().contains(location)) {
-                    Point newLocation = stickyNote.getLocation();
-                    newLocation.translate(location.x - startPt.x, location.y - startPt.y);
+                // Calc new Pt
+                Point newLocation = stickyNote.getLocation();
+                newLocation.translate(deltaX, deltaY);
 
-                    // Get the bounds of the sticky note
-                    Rectangle newBounds = new Rectangle(newLocation.x, newLocation.y, stickyNote.getWidth(), stickyNote.getHeight());
+                // Get bounds of leftPanel and stickyNote
+                Rectangle panelBounds = leftPanel.getBounds();
+                Dimension noteSize = stickyNote.getSize();
 
-                    // Loop through all other sticky notes to check for collisions
-                    for (Component comp : stickyNote.getParent().getComponents()) {
-                        if (comp != stickyNote && comp instanceof JPanel otherNote) {
+                // Ensure the sticky note doesn't go outside the panel
+                int maxX = panelBounds.width - noteSize.width;
+                int maxY = panelBounds.height - noteSize.height;
 
-                            // Get the bounds of the other sticky note
-                            Rectangle otherBounds = otherNote.getBounds();
+                // Clamp the new location within bounds
+                newLocation.x = Math.max(0, Math.min(newLocation.x, maxX));
+                newLocation.y = Math.max(0, Math.min(newLocation.y, maxY));
 
-                            // Check if the new position would cause overlap with another sticky note
-                            if (newBounds.intersects(otherBounds)) {
-                                // Check which side the sticky note is closest to the other sticky note
-                                if (Math.abs(newBounds.x + newBounds.width - otherBounds.x) <= 100) { // Right side close
-                                    newLocation.x = otherBounds.x - newBounds.width; // Snap to the left of the other note
-                                } else if (Math.abs(newBounds.x - (otherBounds.x + otherBounds.width)) <= 100) { // Left side close
-                                    newLocation.x = otherBounds.x + otherBounds.width; // Snap to the right of the other note
-                                } else if (Math.abs(newBounds.y + newBounds.height - otherBounds.y) <= 100) { // Bottom side close
-                                    newLocation.y = otherBounds.y - newBounds.height; // Snap above the other note
-                                } else if (Math.abs(newBounds.y - (otherBounds.y + otherBounds.height)) <= 100) { // Top side close
-                                    newLocation.y = otherBounds.y + otherBounds.height; // Snap below the other note
-                                }
-                            }
+                stickyNote.setLocation(newLocation);
+                startPt = currentPt;
+
+                // Check for collisions
+                for (Component comp : leftPanel.getComponents()) {
+                    if (comp != stickyNote && comp instanceof JPanel) {
+                        JPanel otherNote = (JPanel) comp;
+                        if (stickyNote.getBounds().intersects(otherNote.getBounds())) {
+                            combineTasks(stickyNote, otherNote);
+                            break;
                         }
                     }
-
-                    // Keep the sticky note within the bounds of the parent panel
-                    newLocation.x = Math.max(newLocation.x, 0);
-                    newLocation.y = Math.max(newLocation.y, 0);
-                    newLocation.x = Math.min(newLocation.x, stickyNote.getParent().getWidth() - stickyNote.getWidth());
-                    newLocation.y = Math.min(newLocation.y, stickyNote.getParent().getHeight() - stickyNote.getHeight());
-
-                    // Set the adjusted position
-                    stickyNote.setLocation(newLocation);
-                    startPt = location;
                 }
             }
         });
     }
+
+
+    private PriorityTask getTaskFromStickyNote(JPanel stickyNote) {
+        for (PriorityTask task : TaskManagerExc.getTaskList()) {
+            if (task.getTaskSummary().equals(getTaskFromNotePanel(stickyNote).getTaskSummary())) {
+                return task;
+            }
+        }
+        throw new IllegalArgumentException("Task not found for the sticky note");
+    }
+
+
+    private LocalDate[] mergeDueDates(LocalDate[] dates1, LocalDate[] dates2) {
+        LocalDate start = dates1[0].isBefore(dates2[0]) ? dates1[0] : dates2[0];
+        LocalDate end = dates1[1].isAfter(dates2[1]) ? dates1[1] : dates2[1];
+        return new LocalDate[]{start, end};
+    }
+
+
+    private void combineTasks(JPanel stickyNote1, JPanel stickyNote2) {
+        PriorityTask task1 = getTaskFromStickyNote(stickyNote1);
+        PriorityTask task2 = getTaskFromStickyNote(stickyNote2);
+
+        // Create combined task name with (S) prefix
+        String combinedName = "(S)" + task1.getName();
+
+        // Create a combined description
+        String combinedDescription = "Combined task of: " + task1.getName() + " and " + task2.getName() + "\n\n" +
+                "Description of combined:\n" + task1.getDescription() + "\n\n" +
+                task2.getDescription();
+
+        // Merge the due date ranges
+        LocalDate[] combinedDueDates = mergeDueDates(task1.getDueDateRange(), task2.getDueDateRange());
+
+        String task1Subject = task1.getLegend()[1];
+        String task2Subject = task2.getLegend()[1];
+        String mergedSubject = (task1Subject.equals(task2Subject)) ? task1Subject : task2Subject + "/" + task1Subject;
+
+        // Check if the mergedSubject is not already in the legend
+        if (!TaskManagerExc.getLegend().keySet().contains(mergedSubject)) {
+
+            // Combine the colors
+            Color combinedColor = CustomColors.combineColors(mergedSubject,task1.getLegend()[0], task2.getLegend()[0]);
+            String combinedColorS = CustomColors.convertColorString(String.valueOf(combinedColor));
+
+            // Add the combined color to the legend
+            TaskManagerExc.addLegendElement(mergedSubject, String.valueOf(combinedColorS));
+            task1.setLegend(String.valueOf(combinedColorS),mergedSubject);
+        }
+
+        // Determine the highest priority (urgency) between the two tasks
+        int priorityValue1 = task1.getPriority();
+        int priorityValue2 = task2.getPriority();
+        int highestPriorityValue = Math.min(priorityValue1, priorityValue2);
+        task1.setPriority(highestPriorityValue);
+
+
+        // Update task1 with combined properties
+        task1.setName(combinedName);
+        task1.setDescription(combinedDescription);
+        task1.setDueDateRange(combinedDueDates);
+
+
+        // Remove stickyNote2 from the panel and task list
+        leftPanel.remove(stickyNote2);
+
+        TaskManagerExc.removeTask(task2);
+        WritingUtil.writeTasksToJSON();
+        filterNotes();
+        // Refresh the UI
+        leftPanel.revalidate();
+        leftPanel.repaint();
+
+        rightPanel.revalidate();
+        rightPanel.repaint();
+    }
+
+
+
+    private PriorityTask getTaskFromNotePanel(JPanel notePanel) {
+        return (PriorityTask) notePanel.getClientProperty("task");
+    }
+
+
+
 
     @Override
     public void doubleClick(JPanel stickyNote, PriorityTask task) {
@@ -295,7 +376,7 @@ public class Dashboard extends JPanel implements Clickable {
         classLabel.putClientProperty(FlatClientProperties.STYLE, "font: bold +1");
 
         // Multi-select list for classes
-        JList<String> classFilter = new JList<>(TaskManagerExc.getClasses());
+        classFilter = new JList<>(TaskManagerExc.getClasses());
         classFilter.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         classFilter.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         classFilter.setFixedCellWidth(125);
@@ -315,7 +396,7 @@ public class Dashboard extends JPanel implements Clickable {
 
 
         // Multi-select list for task status
-        JComboBox<String> statusFilter = new JComboBox<>(new String[]{"All", "Complete", "Not Complete"});
+        statusFilter = new JComboBox<>(new String[]{"All", "Complete", "Not Complete"});
         statusFilter.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         statusFilter.setSelectedItem("Not Complete");
 
@@ -326,24 +407,13 @@ public class Dashboard extends JPanel implements Clickable {
 
         // Adding a listener for the statusFilter JComboBox (for statuses like "Complete", "Not Complete", etc.)
         statusFilter.addActionListener(e -> {
-            // Get selected statuses
-            String selectedStatus = (String) statusFilter.getSelectedItem();
-
-            // Get selected classes from classFilter JList
-            List<String> selectedClasses = classFilter.getSelectedValuesList();
-            // Filter based on both selected statuses and selected classes
-            filterTasksAndClasses(new ArrayList<>(List.of(selectedStatus)), new ArrayList<>(selectedClasses));
+            filterNotes();
         });
 
         // Adding a listener for the classFilter JList
         classFilter.addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
-                // Get selected classes from classFilter JList
-                List<String> selectedClasses = classFilter.getSelectedValuesList();  // Works for JList
-                // Get selected status from statusFilter JComboBox
-                String selectedStatus = (String) statusFilter.getSelectedItem();  // Use getSelectedItem for single-selection
-                // Filter based on both selected statuses and selected classes
-                filterTasksAndClasses(new ArrayList<>(List.of(selectedStatus)), new ArrayList<>(selectedClasses));
+                filterNotes();
             }
         });
 
@@ -376,6 +446,15 @@ public class Dashboard extends JPanel implements Clickable {
         return rightPanel;
     }
 
+    private void filterNotes() {
+        // Get selected statuses
+        String selectedStatus = (String) statusFilter.getSelectedItem();
+        // Get selected classes from classFilter JList
+        List<String> selectedClasses = classFilter.getSelectedValuesList();
+        // Filter based on both selected statuses and selected classes
+        filterTasksAndClasses(new ArrayList<>(List.of(selectedStatus)), new ArrayList<>(selectedClasses));
+    }
+
     private void filterTasksAndClasses(ArrayList<String> selectedStatuses, ArrayList<String> selectedClasses) {
         leftPanel.removeAll(); // Clear existing sticky notes
 
@@ -399,7 +478,7 @@ public class Dashboard extends JPanel implements Clickable {
                     String[] taskLegend = task.getLegend();
                     if (taskLegend != null && taskLegend.length > 0) {
                         for (String className : selectedClasses) {
-                            if (className.equals(taskLegend[1])) { // Compare the selected class with the task's legend
+                            if (taskLegend[1].contains(className)) { // Compare the selected class with the task's legend
                                 shouldDisplay = true;
                                 break; // Stop checking once a match is found
                             } else {

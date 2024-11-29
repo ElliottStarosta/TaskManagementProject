@@ -61,14 +61,14 @@ public class CreateNote extends JPanel {
                 case "Urgent":
                     priorityValue = 1;
                     break;
+                case "Normal":
+                    priorityValue = 2;
+                    break;
                 case "Distant":
                     priorityValue = 3;
                     break;
-                case "None":
-                    priorityValue = 0;
-                    break;
                 default:
-                    priorityValue = 2;
+                    priorityValue = 4;
             }
             System.out.println("Selected priority value: " + priorityValue); // For debugging
         });
@@ -101,6 +101,8 @@ public class CreateNote extends JPanel {
         editor.putClientProperty(FlatClientProperties.STYLE, "background:lighten(@background,5%);borderColor: @background");
         datePicker.setEditor(editor);
         datePicker.setDateSelectionAble(localDate -> !localDate.isBefore(LocalDate.now()));
+        datePicker.setSelectedDateRange(LocalDate.now(),LocalDate.now());
+
 
 
         datePicker.addDateSelectionListener(new DateSelectionListener() {
@@ -144,7 +146,7 @@ public class CreateNote extends JPanel {
         String description = descriptionArea.getText();
         String subjectPackage = (String) subjectPackageComboBox.getSelectedItem();
 
-        if (title.length() > 12) {
+        if (title.length() > 20) {
             JOptionPane.showMessageDialog(this,"Please make the title shorter");
             return;
         }

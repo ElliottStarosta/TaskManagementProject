@@ -65,6 +65,11 @@ public abstract class Task {
         return dueDateRange;
     }
 
+    public void setDueDateRange(LocalDate[] dates) {
+        dueDateRange[0] = dates[0];
+        dueDateRange[1] = dates[1];
+    }
+
     public boolean isCompleted() {
         return isCompleted;
     }

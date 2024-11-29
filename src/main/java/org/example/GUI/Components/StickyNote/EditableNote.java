@@ -106,14 +106,14 @@ public class EditableNote extends JPanel {
                 case "Urgent":
                     priorityValue = 1;
                     break;
+                case "Normal":
+                    priorityValue = 2;
+                    break;
                 case "Distant":
                     priorityValue = 3;
                     break;
-                case "None":
-                    priorityValue = 0;
-                    break;
                 default:
-                    priorityValue = 2;
+                    priorityValue = 4;
             }
             System.out.println("Selected priority value: " + priorityValue); // For debugging
         });
@@ -160,12 +160,12 @@ public class EditableNote extends JPanel {
         switch (priorityValue) {
             case 1:
                 return "Urgent";
-            case 3:
-                return "Distant";
-            case 0:
-                return "None";
             case 2:
                 return "Normal";
+            case 3:
+                return "Distant";
+            case 4:
+                return "None";
         }
         return "";
     }
@@ -177,7 +177,7 @@ public class EditableNote extends JPanel {
         String subject = (String) subjectComboBox.getSelectedItem();
 
 
-        if (title.length() > 12) {
+        if (title.length() > 20) {
             JOptionPane.showMessageDialog(this,"Please make the title shorter");
             return;
         }

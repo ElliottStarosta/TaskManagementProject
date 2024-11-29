@@ -5,7 +5,7 @@ import org.example.WritingUtil;
 import java.util.*;
 
 public class TaskManagerExc {
-    private static final LinkedHashMap<String, String> legend = new LinkedHashMap<>() {{
+    private static LinkedHashMap<String, String> legend = new LinkedHashMap<>() {{
         put("All", null);
         put("Math", "RED");
         put("Science", "GREEN");
@@ -31,6 +31,7 @@ public class TaskManagerExc {
         taskList.add(task);
     }
 
+
     public static ArrayList<PriorityTask> getTaskList() {
         return taskList;
     }
@@ -43,7 +44,15 @@ public class TaskManagerExc {
         return legend.keySet().toArray(new String[0]);
     }
 
-    public static HashMap<String, String> getLegend() {
+    public static LinkedHashMap<String, String> getLegend() {
         return legend;
+    }
+
+    public static void addLegendElement(String color, String subject) {
+        legend.put(color,subject);
+    }
+
+    public static void removeTask(PriorityTask task) {
+        taskList.remove(task);
     }
 }
