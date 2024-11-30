@@ -218,41 +218,73 @@ public class Dashboard extends JPanel implements Clickable {
         stickyNote.addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
-                Point currentPt = SwingUtilities.convertPoint(stickyNote, e.getPoint(), stickyNote.getParent());
-                int deltaX = currentPt.x - startPt.x;
-                int deltaY = currentPt.y - startPt.y;
+                if (e.isShiftDown()) {
+                    // Behavior when Shift is held down
+                    Point currentPt = SwingUtilities.convertPoint(stickyNote, e.getPoint(), stickyNote.getParent());
+                    int deltaX = currentPt.x - startPt.x;
+                    int deltaY = currentPt.y - startPt.y;
 
-                // Calc new Pt
-                Point newLocation = stickyNote.getLocation();
-                newLocation.translate(deltaX, deltaY);
+                    // Calculate new location
+                    Point newLocation = stickyNote.getLocation();
+                    newLocation.translate(deltaX, deltaY);
 
-                // Get bounds of leftPanel and stickyNote
-                Rectangle panelBounds = leftPanel.getBounds();
-                Dimension noteSize = stickyNote.getSize();
+                    // Ensure the sticky note stays within the leftPanel bounds
+                    Rectangle panelBounds = leftPanel.getBounds();
+                    Dimension noteSize = stickyNote.getSize();
+                    int maxX = panelBounds.width - noteSize.width;
+                    int maxY = panelBounds.height - noteSize.height;
 
-                // Ensure the sticky note doesn't go outside the panel
-                int maxX = panelBounds.width - noteSize.width;
-                int maxY = panelBounds.height - noteSize.height;
+                    newLocation.x = Math.max(0, Math.min(newLocation.x, maxX));
+                    newLocation.y = Math.max(0, Math.min(newLocation.y, maxY));
 
-                // Clamp the new location within bounds
-                newLocation.x = Math.max(0, Math.min(newLocation.x, maxX));
-                newLocation.y = Math.max(0, Math.min(newLocation.y, maxY));
+                    stickyNote.setLocation(newLocation);
+                    startPt = currentPt;
 
-                stickyNote.setLocation(newLocation);
-                startPt = currentPt;
-
-                // Check for collisions
-                for (Component comp : leftPanel.getComponents()) {
-                    if (comp != stickyNote && comp instanceof JPanel) {
-                        JPanel otherNote = (JPanel) comp;
-                        if (stickyNote.getBounds().intersects(otherNote.getBounds())) {
-                            combineTasks(stickyNote, otherNote);
-                            break;
+                    // Check for collisions
+                    for (Component comp : leftPanel.getComponents()) {
+                        if (comp != stickyNote && comp instanceof JPanel) {
+                            JPanel otherNote = (JPanel) comp;
+                            if (stickyNote.getBounds().intersects(otherNote.getBounds())) {
+                                combineTasks(stickyNote, otherNote);
+                                break;
+                            }
                         }
                     }
+                } else {
+                    // Behavior when Shift is NOT held down
+                    Point location = SwingUtilities.convertPoint(stickyNote, e.getPoint(), stickyNote.getParent());
+                    Point newLocation = stickyNote.getLocation();
+                    newLocation.translate(location.x - startPt.x, location.y - startPt.y);
+
+                    Rectangle newBounds = new Rectangle(newLocation.x, newLocation.y, stickyNote.getWidth(), stickyNote.getHeight());
+                    for (Component comp : stickyNote.getParent().getComponents()) {
+                        if (comp != stickyNote && comp instanceof JPanel otherNote) {
+                            Rectangle otherBounds = otherNote.getBounds();
+                            if (newBounds.intersects(otherBounds)) {
+                                if (Math.abs(newBounds.x + newBounds.width - otherBounds.x) <= 100) {
+                                    newLocation.x = otherBounds.x - newBounds.width;
+                                } else if (Math.abs(newBounds.x - (otherBounds.x + otherBounds.width)) <= 100) {
+                                    newLocation.x = otherBounds.x + otherBounds.width;
+                                } else if (Math.abs(newBounds.y + newBounds.height - otherBounds.y) <= 100) {
+                                    newLocation.y = otherBounds.y - newBounds.height;
+                                } else if (Math.abs(newBounds.y - (otherBounds.y + otherBounds.height)) <= 100) {
+                                    newLocation.y = otherBounds.y + otherBounds.height;
+                                }
+                            }
+                        }
+                    }
+
+                    newLocation.x = Math.max(newLocation.x, 0);
+                    newLocation.y = Math.max(newLocation.y, 0);
+                    newLocation.x = Math.min(newLocation.x, stickyNote.getParent().getWidth() - stickyNote.getWidth());
+                    newLocation.y = Math.min(newLocation.y, stickyNote.getParent().getHeight() - stickyNote.getHeight());
+
+                    stickyNote.setLocation(newLocation);
+                    startPt = location;
                 }
             }
         });
+
     }
 
 
@@ -332,13 +364,9 @@ public class Dashboard extends JPanel implements Clickable {
     }
 
 
-
     private PriorityTask getTaskFromNotePanel(JPanel notePanel) {
         return (PriorityTask) notePanel.getClientProperty("task");
     }
-
-
-
 
     @Override
     public void doubleClick(JPanel stickyNote, PriorityTask task) {
