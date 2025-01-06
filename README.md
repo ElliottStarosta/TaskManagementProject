@@ -17,7 +17,6 @@ Welcome to the **TaskManager Project**! This repository contains a Java-based ap
 - **Programming Language:** Java
 - **GUI Framework:** Swing
 - **Build Tool:** Maven
-- **Testing:** JUnit
 - **Version Control:** Git
 
 ---
